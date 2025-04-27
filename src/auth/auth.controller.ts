@@ -1,15 +1,19 @@
 import { Request, Response } from 'express';
 import { AuthService } from './auth.service';
 import {User} from "../entities/User";
+import {LoginResponseDto} from "../dto/response/loginResponse.dto";
+import {LoginRequestDto} from "../dto/requests/loginRequest.dto";
+import {ErrorResponseDto} from "../dto/response/errorResponse.dto";
+import {RegisterRequestDto} from "../dto/requests/registerRequest.dto";
 
 const authService = new AuthService();
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (
+    req: Request<{}, {}, LoginRequestDto>,
+    res: Response<LoginResponseDto | ErrorResponseDto>
+) => {
 
-    const { // запрашиваю от клиента
-        email,
-        password
-    } = req.body;
+    const { email, password } = req.body; // Автоматическая типизация из Request
 
     // Проверка наличия email и password
     if (!email || !password) {
@@ -25,20 +29,21 @@ export const login = async (req: Request, res: Response) => {
 
         const token = authService.generateToken(user); // делаю токен чтобы его жоостко отправить в ответе
 
-        res.json({ access_token: token }); //  ответ если все четко
+        res.json(
+            { access_token: token}
+        ); //  ответ если все четко
 
     } catch (error) { // если в процессе случился анлак
         res.status(500).json({ message: 'Server error' });
     }
 };
 
-export const register = async (req: Request, res: Response) => {
+export const register = async (
+    req: Request<{}, {}, RegisterRequestDto>,
+    res: Response<LoginResponseDto | ErrorResponseDto>
+) => {
 
-    const {
-        email,
-        password,
-        username
-    } = req.body; // прошу от клиента
+    const { email, password, username } = req.body;
 
     try {
         const user = new User(); // создаю пустого юзера
