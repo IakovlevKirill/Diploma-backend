@@ -6,14 +6,15 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     BeforeInsert,
-    BeforeUpdate
+    BeforeUpdate, BaseEntity
 } from 'typeorm';
 import { CanvasObject } from './CanvasObject';
 import bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
 
 @Entity()
-export class User {
+export class User extends BaseEntity {
+
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -42,6 +43,7 @@ export class User {
     // ========================
     // Методы для работы с паролем
     // ========================
+
     @BeforeInsert()
     @BeforeUpdate()
     async hashPassword() {
