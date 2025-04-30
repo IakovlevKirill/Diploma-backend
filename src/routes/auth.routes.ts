@@ -8,7 +8,7 @@ const router = Router();
 
 /**
  * @swagger
- * /auth/login:
+ * /api/auth/login:
  *   post:
  *     summary: Вход пользователя
  *     tags: [Auth]
@@ -23,6 +23,8 @@ const router = Router();
  *                 type: string
  *               password:
  *                 type: string
+ *               username:
+ *                 type: string
  *     responses:
  *       200:
  *         description: Успешный вход
@@ -35,11 +37,11 @@ const router = Router();
  *                   type: string
  */
 // @ts-ignore
-router.post('/login', login);
+router.post('/api/auth/login', login);
 
 /**
  * @swagger
- * /auth/register:
+ * /api/auth/register:
  *   post:
  *     summary: Регистрация пользователя
  *     tags: [Auth]
@@ -60,11 +62,11 @@ router.post('/login', login);
  *       201:
  *         description: Пользователь создан
  */
-router.post('/register', register);
+router.post('/api/auth/register', register);
 
 /**
  * @swagger
- * /auth/me:
+ * /api/auth/me:
  *   get:
  *     summary: Получить данные текущего пользователя
  *     tags: [Auth]
@@ -74,6 +76,6 @@ router.post('/register', register);
  *       200:
  *         description: Данные пользователя
  */
-router.get('/me', authenticateJwt, getMe);
+router.get('/api/auth/me', authenticateJwt, getMe);
 
 export default router;

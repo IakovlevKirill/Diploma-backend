@@ -1,4 +1,4 @@
-export class createProjectRequestDto {
+export class CreateProjectRequestDto {
     title: string;
-    content: string; // JSON
+    content: string; // JSON-строка
 }

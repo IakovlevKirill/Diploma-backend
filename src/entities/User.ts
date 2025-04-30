@@ -28,6 +28,9 @@ export class User extends BaseEntity {
     @Column({ nullable: true })
     username: string;
 
+    @Column({ nullable: true })
+    projects: string;
+
     @Column({ default: false })
     isVerified: boolean;
 

@@ -13,7 +13,7 @@ export const login = async (
     res: Response<LoginResponseDto | ErrorResponseDto>
 ) => {
 
-    const { email, password } = req.body; // Автоматическая типизация из Request
+    const { email, password, username } = req.body; // Автоматическая типизация из Request
 
     // Проверка наличия email и password
     if (!email || !password) {
