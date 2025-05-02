@@ -5,7 +5,6 @@ export class AuthService {
 
     // методы для обработки запросов
 
-
     // валидация
     async validateUser(email: string, password: string): Promise<User | null> {
         const user = await User.findOne({ where: { email } });

@@ -5,6 +5,8 @@ import {LoginResponseDto} from "../dto/response/loginResponse.dto";
 import {LoginRequestDto} from "../dto/requests/loginRequest.dto";
 import {ErrorResponseDto} from "../dto/response/errorResponse.dto";
 import {RegisterRequestDto} from "../dto/requests/registerRequest.dto";
+import {token} from "morgan";
+import {RegisterResponseDto} from "../dto/response/registerResponse.dto";
 
 const authService = new AuthService();
 
@@ -13,7 +15,7 @@ export const login = async (
     res: Response<LoginResponseDto | ErrorResponseDto>
 ) => {
 
-    const { email, password, username } = req.body; // Автоматическая типизация из Request
+    const { email, password } = req.body; // Автоматическая типизация из Request
 
     // Проверка наличия email и password
     if (!email || !password) {
@@ -30,7 +32,7 @@ export const login = async (
         const token = authService.generateToken(user); // делаю токен чтобы его жоостко отправить в ответе
 
         res.json(
-            { access_token: token}
+            {id: user.id, message: "", access_token: token}
         ); //  ответ если все четко
 
     } catch (error) { // если в процессе случился анлак
@@ -40,10 +42,14 @@ export const login = async (
 
 export const register = async (
     req: Request<{}, {}, RegisterRequestDto>,
-    res: Response<LoginResponseDto | ErrorResponseDto>
+    res: Response<RegisterResponseDto | ErrorResponseDto>
 ) => {
 
-    const { email, password, username } = req.body;
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email and password are required' });
+    }
 
     try {
         const user = new User(); // создаю пустого юзера
@@ -52,13 +58,12 @@ export const register = async (
 
         user.email = email;
         user.password = password; // Автоматически хешируется благодаря @BeforeInsert()
-        user.username = username;
 
         await user.save(); // сохраняю в бд
 
         const token = authService.generateToken(user); // создаю токен
 
-        res.status(201).json({ access_token: token }); // отдаю токен, если все четко
+        res.status(201).json({id: user.id, message: "", access_token: token }); // отдаю токен, если все четко
 
     } catch (error) { // если анлак
         res.status(400).json({ message: 'Registration failed' });

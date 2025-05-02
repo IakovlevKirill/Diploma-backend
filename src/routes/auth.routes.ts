@@ -23,8 +23,6 @@ const router = Router();
  *                 type: string
  *               password:
  *                 type: string
- *               username:
- *                 type: string
  *     responses:
  *       200:
  *         description: Успешный вход
@@ -34,6 +32,8 @@ const router = Router();
  *               type: object
  *               properties:
  *                 access_token:
+ *                   type: string
+ *                 id:
  *                   type: string
  */
 // @ts-ignore
@@ -56,12 +56,20 @@ router.post('/api/auth/login', login);
  *                 type: string
  *               password:
  *                 type: string
- *               username:
- *                 type: string
  *     responses:
- *       201:
- *         description: Пользователь создан
+ *       200:
+ *         description: Успешная регистрация
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 access_token:
+ *                   type: string
+ *                 id:
+ *                   type: string
  */
+// @ts-ignore
 router.post('/api/auth/register', register);
 
 /**
