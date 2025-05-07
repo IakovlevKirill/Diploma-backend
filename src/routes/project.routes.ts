@@ -1,5 +1,12 @@
 import {Router} from "express";
-import {createProject, deleteProject, getAllProjects, getProjectById} from '../project/project.controller';
+import {
+    createProject,
+    deleteProject,
+    getAllProjects,
+    getProjectById,
+    pinProject,
+    getPinnedProjects
+} from '../project/project.controller';
 
 const router = Router();
 
@@ -144,5 +151,67 @@ router.get('/api/project/get/all', getAllProjects );
  */
 // @ts-ignore
 router.delete('/api/project/delete', deleteProject );
+
+/**
+ * @swagger
+ * /api/project/pin:
+ *   post:
+ *     summary: Пин проекта
+ *     tags: [Project]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               projectId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Проект успешно запинен
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   message: string
+ */
+// @ts-ignore
+router.post('/api/project/pin', pinProject );
+
+/**
+ * @swagger
+ * /api/project/get/pinned:
+ *   get:
+ *     summary: Получить pinned проекты
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Проект найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: string
+ *
+ *
+ */
+// @ts-ignore
+router.get('/api/project/get/pinned', getPinnedProjects );
 
 export default router;
