@@ -8,6 +8,8 @@ import {getProjectByIdResponseDto} from "../dto/response/getProjectByIdResponse.
 import {User} from "../entities/User";
 import {GetAllProjectsRequestDto} from "../dto/requests/getAllProjectsRequest.dto";
 import {GetAllProjectsResponseDto} from "../dto/response/getAllProjectsResponse.dto";
+import {deleteProjectRequestDto} from "../dto/requests/deleteProjectRequest.dto";
+import {deleteProjectResponseDto} from "../dto/response/deleteProjectResponse.dto";
 
 export const createProject = async (
     req: Request<{}, {}, CreateProjectRequestDto>,
@@ -50,6 +52,37 @@ export const getProjectById = async (
         }
     } catch (error) {
         res.status(500).json({ message: 'Error getting project' });
+    }
+}
+export const deleteProject = async (
+    req: Request<{}, {}, {}, deleteProjectRequestDto>,
+    res: Response<deleteProjectResponseDto | ErrorResponseDto>
+) => {
+    const { projectId } = req.query;
+
+    if (!projectId) {
+        return res.status(400).json({ message: 'Project ID is required' });
+    }
+
+    try {
+        const project = await Project.findOne({ where: { id: projectId } });
+
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        await Project.delete({ id: projectId });
+
+        return res.status(200).json({
+            success: true,
+            message: 'Project deleted successfully'
+        });
+
+    } catch (error) {
+        console.error('Error deleting project:', error);
+        return res.status(500).json({
+            message: 'Internal server error while deleting project'
+        });
     }
 }
 

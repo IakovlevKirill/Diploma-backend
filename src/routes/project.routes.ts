@@ -1,5 +1,5 @@
 import {Router} from "express";
-import {createProject, getAllProjects, getProjectById} from '../project/project.controller';
+import {createProject, deleteProject, getAllProjects, getProjectById} from '../project/project.controller';
 
 const router = Router();
 
@@ -109,5 +109,40 @@ router.get('/api/project/get', getProjectById );
  */
 // @ts-ignore
 router.get('/api/project/get/all', getAllProjects );
+
+/**
+ * @swagger
+ * /api/project/delete:
+ *   delete:
+ *     summary: Удалить проект
+ *     tags: [Project]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               projectId:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Проект найден
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                  success:
+ *                     type: boolean
+ *                  message:
+ *                     type: string
+ *
+ *
+ */
+// @ts-ignore
+router.delete('/api/project/delete', deleteProject );
 
 export default router;
