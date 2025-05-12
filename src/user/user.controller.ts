@@ -1,21 +1,26 @@
 import {Request, Response} from "express";
 import {ErrorResponseDto} from "../dto/response/errorResponse.dto";
-import {getUserByIdRequestDto} from "../dto/requests/getUserByIdRequest.dto";
-import {getUserByIdResponseDto} from "../dto/response/getUserByIdResponse.dto";
 import {User} from "../entities/User";
-import {Project} from "../entities/Project";
 
 export const getUserById = async (
-    req: Request<{}, {},getUserByIdRequestDto >,
-    res: Response<getUserByIdResponseDto | ErrorResponseDto>
+    req: Request<{}, {}, {}, {userId: string} >,
+    res: Response<User | ErrorResponseDto>
 ) => {
 
-    const { id } = req.body;
+    const { userId } = req.query;
+
+    if (!userId) {
+        return res.status(400).json({ message: 'User id is required' });
+    }
 
     try {
-        const user = new User()
+        const user = await User.findOne({ where: { id: userId } });
 
-        res.status(201).json({user});
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        res.status(201).json(user);
 
     } catch (error) {
         res.status(500).json({ message: 'Error getting user' });
