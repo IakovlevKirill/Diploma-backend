@@ -37,6 +37,30 @@ export const createProject = async (
     }
 };
 
+export const duplicateProject = async (
+    req: Request<{}, {}, { userId: string, newTitle: string }>,
+    res: Response<CreateProjectResponseDto | ErrorResponseDto>
+) => {
+    const { userId, newTitle } = req.body;
+
+    try {
+        const project = new Project();
+
+        // @ts-ignore
+        project.user = await User.findOne({ where: { id: userId } });
+
+        project.title = newTitle;
+
+        await project.save();
+
+        // После сохранения project уже имеет ID
+        return res.json({ id: project.id });
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Error creating project' });
+    }
+};
+
 export const getProjectById = async (
     req: Request<{}, {},getProjectByIdRequestDto >,
     res: Response<getProjectByIdResponseDto | ErrorResponseDto>
