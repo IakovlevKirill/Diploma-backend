@@ -16,12 +16,10 @@ export const createProject = async (
     req: Request<{}, {}, CreateProjectRequestDto>,
     res: Response<CreateProjectResponseDto | ErrorResponseDto>
 ) => {
-    const { title, content, userId } = req.body;
+    const { userId } = req.body;
 
     try {
         const project = new Project();
-        project.title = title;
-        project.content = content;
         project.isPinned = false;
 
         // TypeORM сам установит createdAt и updatedAt благодаря декораторам
@@ -165,5 +163,33 @@ export const getPinnedProjects = async (
     } catch (error) {
         console.error('Error:', error);
         return res.status(500).json({ message: 'Error fetching projects' });
+    }
+};
+
+export const changeProjectTitle = async (
+    req: Request<{}, {}, { projectId: string, projectTitle: string }>,
+    res: Response<ErrorResponseDto>
+) => {
+    const { projectId, projectTitle } = req.body;
+
+    if (!projectId || !projectTitle) {
+        return res.status(400).json({ message: 'projectId and projectTitle is required' });
+    }
+
+    try {
+        const project = await Project.findOne({ where: { id: projectId } });
+
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        project.title = projectTitle;
+
+        await project.save();
+
+        res.status(201).json({message: 'success'});
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Error changing project title' });
     }
 };

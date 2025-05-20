@@ -14,10 +14,10 @@ export class Project extends BaseEntity{
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
-    @Column()
+    @Column({default: 'Untitled'})
     title: string;
 
-    @Column()
+    @Column({default: false})
     isPinned: boolean;
 
     @CreateDateColumn({ type: 'timestamp with time zone' })
@@ -26,7 +26,7 @@ export class Project extends BaseEntity{
     @UpdateDateColumn({ type: 'timestamp with time zone' })
     updatedAt: Date;
 
-    @Column({ type: 'text' }) // Для хранения JSON
+    @Column({ type: 'text', default: ''}) // Для хранения JSON
     content: string;
 
     @ManyToOne(() => User, (user) => user.projects) // Убедитесь, что в User есть поле projects
