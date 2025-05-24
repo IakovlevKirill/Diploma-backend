@@ -7,7 +7,8 @@ import {
     pinProject,
     getPinnedProjects,
     changeProjectTitle,
-    duplicateProject
+    duplicateProject,
+    unpinProject
 } from '../project/project.controller';
 
 const router = Router();
@@ -219,5 +220,7 @@ router.get('/api/project/get/pinned', getPinnedProjects );
 router.post('/api/project/change/title', changeProjectTitle );
 // @ts-ignore
 router.post('/api/project/duplicate', duplicateProject );
+// @ts-ignore
+router.post('/api/project/unpin', unpinProject );
 
 export default router;

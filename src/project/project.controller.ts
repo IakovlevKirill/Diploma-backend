@@ -30,7 +30,7 @@ export const createProject = async (
         await project.save();
 
         // После сохранения project уже имеет ID
-        return res.json({ id: project.id });
+        return res.json({ project: project });
 
     } catch (error) {
         return res.status(500).json({ message: 'Error creating project' });
@@ -39,7 +39,7 @@ export const createProject = async (
 
 export const duplicateProject = async (
     req: Request<{}, {}, { userId: string, newTitle: string }>,
-    res: Response<CreateProjectResponseDto | ErrorResponseDto>
+    res: Response<{ project: Project } | ErrorResponseDto>
 ) => {
     const { userId, newTitle } = req.body;
 
@@ -54,7 +54,7 @@ export const duplicateProject = async (
         await project.save();
 
         // После сохранения project уже имеет ID
-        return res.json({ id: project.id });
+        return res.json({ project: project });
 
     } catch (error) {
         return res.status(500).json({ message: 'Error creating project' });
@@ -155,6 +155,34 @@ export const pinProject = async (
         }
 
         project.isPinned = true;
+
+        await project.save();
+
+        res.status(201).json({message: 'success'});
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Error creating project' });
+    }
+};
+
+export const unpinProject = async (
+    req: Request<{}, {}, { projectId: string }>,
+    res: Response<ErrorResponseDto>
+) => {
+    const { projectId } = req.body;
+
+    if (!projectId) {
+        return res.status(400).json({ message: 'projectId is required' });
+    }
+
+    try {
+        const project = await Project.findOne({ where: { id: projectId } });
+
+        if (!project) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        project.isPinned = false;
 
         await project.save();
 
