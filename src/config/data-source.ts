@@ -1,7 +1,7 @@
 import 'dotenv/config'; // Добавьте эту строку в самом начале файла
 import { DataSource } from "typeorm";
 import { User } from "../entities/User";
-import { CanvasObject } from "../entities/CanvasObject";
+import { CanvasNode } from "../entities/CanvasNode";
 import {Project} from "../entities/Project";
 
 // файл конфигурации подключения к базе данных через TypeORM
@@ -24,7 +24,7 @@ export const AppDataSource = new DataSource({
     logging: true,
 
     // Регистрация сущностей (таблиц)
-    entities: [User, CanvasObject, Project],
+    entities: [User, CanvasNode, Project],
 
     // Миграции (пока не используем)
     migrations: [],

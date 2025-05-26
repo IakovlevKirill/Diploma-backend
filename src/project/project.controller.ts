@@ -1,16 +1,18 @@
 import { Request, Response } from 'express';
+
+import {Project} from "../entities/Project";
+import {User} from "../entities/User";
+
 import {ErrorResponseDto} from "../dto/response/errorResponse.dto";
 import {CreateProjectRequestDto} from "../dto/requests/createProjectRequest.dto";
-import {Project} from "../entities/Project";
 import {CreateProjectResponseDto} from "../dto/response/createProjectResponse.dto";
 import {getProjectByIdRequestDto} from "../dto/requests/getProjectByIdRequest.dto";
 import {getProjectByIdResponseDto} from "../dto/response/getProjectByIdResponse.dto";
-import {User} from "../entities/User";
-import {GetAllProjectsRequestDto} from "../dto/requests/getAllProjectsRequest.dto";
 import {GetAllProjectsResponseDto} from "../dto/response/getAllProjectsResponse.dto";
 import {deleteProjectRequestDto} from "../dto/requests/deleteProjectRequest.dto";
 import {deleteProjectResponseDto} from "../dto/response/deleteProjectResponse.dto";
 import {GetPinnedProjectsDto} from "../dto/requests/getPinnedProjects.dto";
+import {CanvasNode} from "../entities/CanvasNode";
 
 export const createProject = async (
     req: Request<{}, {}, CreateProjectRequestDto>,
@@ -79,6 +81,7 @@ export const getProjectById = async (
         res.status(500).json({ message: 'Error getting project' });
     }
 }
+
 export const deleteProject = async (
     req: Request<{}, {}, {}, deleteProjectRequestDto>,
     res: Response<deleteProjectResponseDto | ErrorResponseDto>
@@ -244,4 +247,53 @@ export const changeProjectTitle = async (
     } catch (error) {
         return res.status(500).json({ message: 'Error changing project title' });
     }
+};
+
+/// NODE CONTROLLER
+
+export const createNode = async (
+    req: Request<{}, {}, {
+        projectId: string,
+        position: { x: number; y: number },
+        parent: string,
+        children: string[]
+    }>,
+    res: Response<{
+        created_node_id :string
+    } | ErrorResponseDto>
+) => {
+    const { projectId, position, parent, children } = req.body;
+
+    try {
+
+        const node = new CanvasNode();
+
+        node.position = position;
+        node.children = children;
+        node.parent = parent;
+
+        const project = await Project.findOne({ where: { id: projectId } });
+
+        project?.nodes.push(node);
+
+        await project?.save();
+
+        return res.json({ created_node_id : node.id });
+
+    } catch (error) {
+        return res.status(500).json({ message: 'Error creating node' });
+    }
+};
+
+export const deleteNode = async (
+    req: Request<{}, {}, CreateProjectRequestDto>,
+    res: Response<CreateProjectResponseDto | ErrorResponseDto>
+) => {
+
+};
+
+export const updateNode = async (
+    req: Request<{}, {}, CreateProjectRequestDto>,
+    res: Response<CreateProjectResponseDto | ErrorResponseDto>
+) => {
 };

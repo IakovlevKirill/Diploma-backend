@@ -5,12 +5,14 @@ import {
     ManyToOne,
     BaseEntity,
     UpdateDateColumn,
-    CreateDateColumn
+    CreateDateColumn,
+    OneToMany
 } from "typeorm";
 import { User } from "./User";
+import {CanvasNode} from "./CanvasNode";
 
 @Entity()
-export class Project extends BaseEntity{
+export class Project extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
@@ -26,9 +28,12 @@ export class Project extends BaseEntity{
     @UpdateDateColumn({ type: 'timestamp with time zone' })
     updatedAt: Date;
 
-    @Column({ type: 'text', default: ''}) // Для хранения JSON
-    content: string;
+    @Column({ type: 'text', default: ''})
+    content: string; // json
 
-    @ManyToOne(() => User, (user) => user.projects) // Убедитесь, что в User есть поле projects
+    @OneToMany(() => CanvasNode, (node) => node.project)
+    nodes: CanvasNode[];
+
+    @ManyToOne(() => User, (user) => user.projects)
     user: User;
 }

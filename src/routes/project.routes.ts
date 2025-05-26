@@ -8,7 +8,7 @@ import {
     getPinnedProjects,
     changeProjectTitle,
     duplicateProject,
-    unpinProject
+    unpinProject, createNode, deleteNode, updateNode
 } from '../project/project.controller';
 
 const router = Router();
@@ -222,5 +222,11 @@ router.post('/api/project/change/title', changeProjectTitle );
 router.post('/api/project/duplicate', duplicateProject );
 // @ts-ignore
 router.post('/api/project/unpin', unpinProject );
+// @ts-ignore
+router.post('/api/project/node/create', createNode);
+// @ts-ignore
+router.delete('/api/project/node/delete', deleteNode);
+// @ts-ignore
+router.put('/api/project/node/update', updateNode);
 
 export default router;

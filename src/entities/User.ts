@@ -6,15 +6,16 @@ import {
     CreateDateColumn,
     UpdateDateColumn,
     BeforeInsert,
-    BeforeUpdate, BaseEntity
+    BeforeUpdate,
+    BaseEntity,
+    ManyToOne
 } from 'typeorm';
-import { CanvasObject } from './CanvasObject';
 import bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
+import {Project} from "./Project";
 
 @Entity()
 export class User extends BaseEntity {
-
     @PrimaryGeneratedColumn('uuid')
     id: string;
 
@@ -31,14 +32,11 @@ export class User extends BaseEntity {
     @Column({ default: 'user' })
     role: string;
 
-    @Column({ nullable: true })
-    projects: string;
+    @OneToMany(() => Project, (project) => project.user) // Исправлено здесь
+    projects: Project[];
 
     @Column({ default: false })
     isVerified: boolean;
-
-    @OneToMany(() => CanvasObject, (object) => object.user)
-    objects: CanvasObject[];
 
     @CreateDateColumn()
     createdAt: Date;
@@ -60,13 +58,5 @@ export class User extends BaseEntity {
 
     async comparePassword(attempt: string): Promise<boolean> {
         return bcrypt.compare(attempt, this.password);
-    }
-
-    // ========================
-    // Пример метода для API-ответа
-    // ========================
-    toJSON() {
-        const { password, ...rest } = this;
-        return rest;
     }
 }
