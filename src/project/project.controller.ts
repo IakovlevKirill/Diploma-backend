@@ -251,32 +251,56 @@ export const changeProjectTitle = async (
 
 /// NODE CONTROLLER
 
+export const getNodesByProjectId = async (
+    req: Request<{ projectId: string }>,
+    res: Response<CanvasNode[] | ErrorResponseDto>
+) => {
+    try {
+        const nodes = await CanvasNode.find({
+            where: { project: { id: req.params.projectId } },
+        });
+        res.json(nodes);
+    } catch (error) {
+        res.status(500).json({ message: 'Error fetching nodes' });
+    }
+};
+
 export const createNode = async (
     req: Request<{}, {}, {
+        name: string,
         projectId: string,
         position: { x: number; y: number },
+        size: { width: number; height: number; },
         parent: string,
-        children: string[]
+        children: string[],
+        color: string
     }>,
     res: Response<{
         created_node_id :string
     } | ErrorResponseDto>
 ) => {
-    const { projectId, position, parent, children } = req.body;
+    const { projectId, position, parent, children, name, size, color } = req.body;
+
+    if (!projectId || !position || !parent || !children || !name || !size) {
+        return res.status(400).json({ message: 'Match all required fields' });
+    }
 
     try {
-
         const node = new CanvasNode();
-
-        node.position = position;
-        node.children = children;
-        node.parent = parent;
 
         const project = await Project.findOne({ where: { id: projectId } });
 
-        project?.nodes.push(node);
+        if (!project) return res.status(404).json({ message: 'Project not found' });
 
-        await project?.save();
+        node.position = position;
+        node.children = children;
+        node.project = project;
+        node.parent = parent;
+        node.name = name;
+        node.size = size;
+        node.color = color;
+
+        await node.save();
 
         return res.json({ created_node_id : node.id });
 

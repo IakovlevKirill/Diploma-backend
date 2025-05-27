@@ -2,17 +2,24 @@ import {
     Entity,
     PrimaryGeneratedColumn,
     Column,
-    ManyToOne
+    ManyToOne,
+    BaseEntity
 } from "typeorm";
 import {Project} from "./Project";
 
 @Entity()
-export class CanvasNode {
+export class CanvasNode extends BaseEntity {
     @PrimaryGeneratedColumn("uuid")
     id: string;
 
+    @Column()
+    name: string;
+
     @Column("jsonb")
     position: { x: number; y: number };
+
+    @Column("jsonb")
+    size: { width: number; height: number ; };
 
     @Column()
     parent: string; // id родителя
@@ -20,10 +27,7 @@ export class CanvasNode {
     @Column("text", { array: true })
     children: string[]; // id детей
 
-    @Column({default: 'node'})
-    type: string;
-
-    @Column({default: 'D9D9D9'})
+    @Column()
     color: string;
 
     @ManyToOne(() => Project, (project) => project.nodes)
