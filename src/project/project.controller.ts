@@ -255,11 +255,16 @@ export const getNodesByProjectId = async (
     req: Request<{ projectId: string }>,
     res: Response<CanvasNode[] | ErrorResponseDto>
 ) => {
+
+    const { projectId } = req.query;
+
     try {
-        const nodes = await CanvasNode.find({
-            where: { project: { id: req.params.projectId } },
-        });
-        res.json(nodes);
+
+        // @ts-ignore
+        const nodes = await CanvasNode.find({where: {project: { id: projectId },}});
+
+        res.status(201).json(nodes);
+
     } catch (error) {
         res.status(500).json({ message: 'Error fetching nodes' });
     }
