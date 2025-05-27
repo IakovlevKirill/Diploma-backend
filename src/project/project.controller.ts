@@ -315,11 +315,34 @@ export const createNode = async (
 };
 
 export const deleteNode = async (
-    req: Request<{}, {}, CreateProjectRequestDto>,
-    res: Response<CreateProjectResponseDto | ErrorResponseDto>
+    req: Request<{}, {}, {}, { nodeId: string }>,
+    res: Response<ErrorResponseDto>
 ) => {
+    const { nodeId } = req.query;
 
-};
+    if (!nodeId) {
+        return res.status(400).json({ message: 'nodeId is required' });
+    }
+
+    try {
+        const node = await CanvasNode.findOne({ where: { id: nodeId } });
+
+        if (!node) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+
+        await CanvasNode.delete({ id: nodeId });
+
+        return res.status(200).json({
+            message: 'node deleted successfully'
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Internal server error while deleting node'
+        });
+    }
+}
 
 export const updateNode = async (
     req: Request<{}, {}, CreateProjectRequestDto>,
