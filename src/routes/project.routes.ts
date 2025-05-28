@@ -238,6 +238,6 @@ router.post('/api/project/node/create', createNode);
 // @ts-ignore
 router.delete('/api/project/node/delete', deleteNode);
 // @ts-ignore
-router.put('/api/project/node/update', updateNode);
+router.post('/api/project/node/update', updateNode);
 
 export default router;

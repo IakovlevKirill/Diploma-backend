@@ -345,7 +345,33 @@ export const deleteNode = async (
 }
 
 export const updateNode = async (
-    req: Request<{}, {}, CreateProjectRequestDto>,
-    res: Response<CreateProjectResponseDto | ErrorResponseDto>
+    req: Request<{ id: string, x: number, y: number}>,
+    res: Response<CanvasNode[] | ErrorResponseDto>
 ) => {
+
+    const { id, x, y } = req.body;
+
+    if (!id || !x || !y) {
+        return res.status(400).json({ message: 'id, x, y  are required' });
+    }
+
+    try {
+        const node = await CanvasNode.findOne({ where: { id: id } });
+
+        if (!node) {
+            return res.status(404).json({ message: 'Project not found' });
+        }
+        node.position = { x, y };
+
+        await node.save();
+
+        return res.status(200).json({
+            message: 'node updated successfully'
+        });
+
+    } catch (error) {
+        return res.status(500).json({
+            message: 'Internal server error while updating node'
+        });
+    }
 };
