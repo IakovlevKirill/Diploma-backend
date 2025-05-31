@@ -31,7 +31,7 @@ export class Project extends BaseEntity {
     @Column({ type: 'text', default: ''})
     content: string; // json
 
-    @OneToMany(() => CanvasNode, (node) => node.project)
+    @OneToMany(() => CanvasNode, (node) => node.project, { cascade: true })
     nodes: CanvasNode[];
 
     @ManyToOne(() => User, (user) => user.projects)

@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { AuthService } from './auth.service';
+import { AuthService } from '../auth/auth.service';
 import {User} from "../entities/User";
 import {LoginResponseDto} from "../dto/response/loginResponse.dto";
 import {LoginRequestDto} from "../dto/requests/loginRequest.dto";

@@ -30,6 +30,6 @@ export class CanvasNode extends BaseEntity {
     @Column()
     color: string;
 
-    @ManyToOne(() => Project, (project) => project.nodes)
+    @ManyToOne(() => Project, (project) => project.nodes, { onDelete: 'CASCADE' })
     project: Project;
 }

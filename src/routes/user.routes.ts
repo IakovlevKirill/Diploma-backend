@@ -1,7 +1,7 @@
 import {
     changeUserPassword,
     getUserById
-} from "../user/user.controller";
+} from "../controllers/user.controller";
 import {Router} from "express";
 
 const router = Router();
