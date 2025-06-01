@@ -11,65 +11,98 @@ import {RegisterResponseDto} from "../dto/response/registerResponse.dto";
 const authService = new AuthService();
 
 export const login = async (
-    req: Request<{}, {}, LoginRequestDto>,
-    res: Response<LoginResponseDto | ErrorResponseDto>
-) => {
-
-    const { email, password } = req.body; // Автоматическая типизация из Request
-
-    // Проверка наличия email и password
-    if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required' });
-    }
-
-    try {
-        const user = await authService.validateUser(email, password); // пробую получить пользователя по кредам
-
-        if (!user) { //  если анлак
-            return res.status(401).json({ message: 'Invalid credentials' });
-        }
-
-        const token = authService.generateToken(user); // делаю токен чтобы его жоостко отправить в ответе
-
-        res.json(
-            {id: user.id, message: "", access_token: token}
-        ); //  ответ если все четко
-
-    } catch (error) { // если в процессе случился анлак
-        res.status(500).json({ message: 'Server error' });
-    }
-};
-
-export const register = async (
-    req: Request<{}, {}, RegisterRequestDto>,
-    res: Response<RegisterResponseDto | ErrorResponseDto>
+    req: Request<{}, {}, {
+        email: string;
+        password: string;
+    }>,
+    res: Response<{
+        result: "success" | "failure";
+        data: {
+            access_token: string;
+            id: string;
+        },
+    } | ErrorResponseDto>
 ) => {
 
     const { email, password } = req.body;
 
     if (!email || !password) {
-        return res.status(400).json({ message: 'Email and password are required' });
+        return res.status(400).json({
+            result: "failure",
+            message: 'Email and password are required'
+        });
     }
 
     try {
-        const user = new User(); // создаю пустого юзера
+        const user = await authService.validateUser(email, password);
 
-        // заполняю тем, что получил с клиента
+        if (!user) {
+            return res.status(401).json({
+                result: "failure",
+                message: 'Invalid credentials'
+            });
+        }
 
-        user.email = email;
-        user.password = password; // Автоматически хешируется благодаря @BeforeInsert()
+        const token = authService.generateToken(user);
 
-        await user.save(); // сохраняю в бд
+        res.status(200).json({
+            result: "success",
+            data: {access_token: token, id: user.id}
+        });
 
-        const token = authService.generateToken(user); // создаю токен
-
-        res.status(201).json({id: user.id, message: "", access_token: token }); // отдаю токен, если все четко
-
-    } catch (error) { // если анлак
-        res.status(400).json({ message: 'Registration failed' });
+    } catch (error) {
+        res.status(500).json({
+            result: "failure",
+            message: 'Server error'
+        });
     }
 };
 
-export const getMe = async (req: Request, res: Response) => {
-    res.json(req.user); // Пользователь из JWT (добавлен в middleware)
+export const register = async (
+    req: Request<{}, {}, {
+        email: string;
+        password: string;
+    }>,
+    res: Response<{
+        result: "success" | "failure",
+        data: {
+            access_token: string;
+            id: string;
+        }
+    } | ErrorResponseDto>
+) => {
+
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+        return res.status(400).json({
+            result: "failure",
+            message: "Email and password are required"
+        });
+    }
+
+    try {
+        const user = new User();
+
+        user.email = email;
+        user.password = password;
+
+        await user.save();
+
+        const token = authService.generateToken(user);
+
+        res.status(201).json({
+            result: "success",
+            data: {
+                access_token: token,
+                id: user.id,
+            }
+        });
+
+    } catch (error) {
+        res.status(500).json({
+            result: "failure",
+            message: 'Registration failed'
+        });
+    }
 };

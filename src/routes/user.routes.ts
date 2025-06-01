@@ -8,7 +8,6 @@ const router = Router();
 
 // @ts-ignore
 router.post('/api/user/change/password', changeUserPassword)
-
 // @ts-ignore
 router.get('/api/user/get', getUserById)
 

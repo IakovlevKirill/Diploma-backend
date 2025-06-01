@@ -1,6 +1,6 @@
 // auth.routes.ts
 import { Router } from 'express';
-import { login, register, getMe } from '../controllers/auth.controller';
+import { login, register } from '../controllers/auth.controller';
 import { authenticateJwt } from '../auth/middleware/auth.middleware';
 
 const router = Router();
@@ -71,19 +71,5 @@ router.post('/api/auth/login', login);
  */
 // @ts-ignore
 router.post('/api/auth/register', register);
-
-/**
- * @swagger
- * /api/auth/me:
- *   get:
- *     summary: Получить данные текущего пользователя
- *     tags: [Auth]
- *     security:
- *       - bearerAuth: []
- *     responses:
- *       200:
- *         description: Данные пользователя
- */
-router.get('/api/auth/me', authenticateJwt, getMe);
 
 export default router;

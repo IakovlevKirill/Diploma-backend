@@ -1,4 +1,7 @@
 export class LoginResponseDto {
-    access_token: string;
-    id: string;
+    result: boolean;
+    data: {
+        access_token: string;
+        id: string;
+    }
 }
