@@ -124,7 +124,7 @@ export const duplicateProject = async (
 
 export const getProjectById = async (
     req: Request<{}, {}, {}, {
-        id: string;
+        projectId: string;
     }>,
     res: Response<{
         result: "success" | "failure",
@@ -134,9 +134,9 @@ export const getProjectById = async (
     } | ErrorResponseDto>
 )=> {
 
-    const { id } = req.query;
+    const { projectId } = req.query;
 
-    if (!id) {
+    if (!projectId) {
         return res.status(400).json({
             result: "failure",
             message: 'Id is required'
@@ -145,7 +145,7 @@ export const getProjectById = async (
 
     try {
 
-        const project = await Project.findOne({ where: { id: id } });
+        const project = await Project.findOne({ where: { id: projectId } });
 
         if (!project) {
             return res.status(404).json({
@@ -175,7 +175,7 @@ export const deleteProject = async (
     }>,
     res: Response<{
         result: "success" | "failure",
-        message: 'Project deleted successfully'
+        message: string
     } | ErrorResponseDto>
 ) => {
 
