@@ -4,12 +4,6 @@ import {Project} from "../entities/Project";
 import {User} from "../entities/User";
 
 import {ErrorResponseDto} from "../dto/response/errorResponse.dto";
-import {getProjectByIdRequestDto} from "../dto/requests/getProjectByIdRequest.dto";
-import {getProjectByIdResponseDto} from "../dto/response/getProjectByIdResponse.dto";
-import {GetAllProjectsResponseDto} from "../dto/response/getAllProjectsResponse.dto";
-import {deleteProjectRequestDto} from "../dto/requests/deleteProjectRequest.dto";
-import {deleteProjectResponseDto} from "../dto/response/deleteProjectResponse.dto";
-import {GetPinnedProjectsDto} from "../dto/requests/getPinnedProjects.dto";
 
 export const createProject = async (
     req: Request<{}, {}, {
