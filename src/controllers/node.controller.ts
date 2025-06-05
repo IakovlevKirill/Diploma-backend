@@ -203,3 +203,64 @@ export const updateNode = async (
         });
     }
 };
+
+export const getNodeChildren = async (
+    req: Request<{}, {}, {}, {
+        nodeId: string
+    }> ,
+    res: Response<{
+        result: "success" | "failure",
+        data: {
+            nodes: CanvasNode[]
+        }
+    } | ErrorResponseDto>
+) => {
+
+    const { nodeId } = req.query;
+
+    if (!nodeId) {
+        return res.status(400).json({
+            result: "failure",
+            message: 'nodeId is required'
+        });
+    }
+
+    try {
+
+        const node = await CanvasNode.findOne({
+            where: { id: nodeId }
+        });
+
+        if (node == null) {
+            return res.status(404).json({
+                result: "failure",
+                message: 'node not found'
+            })
+        }
+
+        const nodeChildrenIds = node.children;
+
+        const nodeChildren : CanvasNode[] = []
+
+        for (let i = 0; i < nodeChildrenIds.length; i++) {
+            const node = await CanvasNode.findOne({ where: { id: nodeChildrenIds[i] } });
+            if (node != null) {
+                nodeChildren.push(node);
+            }
+        }
+
+        return res.status(200).json({
+            result: "success",
+            data: {
+                nodes: nodeChildren
+            }
+        });
+
+
+    } catch (error) {
+        return res.status(500).json({
+            result: "failure",
+            message: 'Internal server error while getting node children'
+        });
+    }
+};

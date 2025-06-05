@@ -3,7 +3,8 @@ import {
     createNode,
     deleteNode,
     updateNode,
-    getNodesByProjectId
+    getNodesByProjectId,
+    getNodeChildren,
 } from '../controllers/node.controller';
 
 const router = Router();
@@ -16,5 +17,7 @@ router.post('/api/project/node/create', createNode);
 router.delete('/api/project/node/delete', deleteNode);
 // @ts-ignore
 router.post('/api/project/node/update', updateNode);
+// @ts-ignore
+router.get('/api/project/node/get/children', getNodeChildren);
 
 export default router;
