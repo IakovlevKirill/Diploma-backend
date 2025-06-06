@@ -3,14 +3,14 @@ import {
     createNode,
     deleteNode,
     updateNode,
-    getProjectRootNodesByProjectId,
+    getAllProjectNodesByProjectId,
     getNodeChildren,
 } from '../controllers/node.controller';
 
 const router = Router();
 
 // @ts-ignore
-router.get('/api/project/nodes/get', getProjectRootNodesByProjectId );
+router.get('/api/project/nodes/get', getAllProjectNodesByProjectId );
 // @ts-ignore
 router.post('/api/project/node/create', createNode);
 // @ts-ignore

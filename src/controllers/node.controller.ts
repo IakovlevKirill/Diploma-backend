@@ -5,7 +5,7 @@ import {CanvasNode} from "../entities/CanvasNode";
 
 import {ErrorResponseDto} from "../dto/response/errorResponse.dto";
 
-export const getProjectRootNodesByProjectId = async (
+export const getAllProjectNodesByProjectId = async (
     req: Request<{}, {}, {}, {
         projectId: string
     }>,
@@ -30,8 +30,7 @@ export const getProjectRootNodesByProjectId = async (
 
         const nodesArray = await CanvasNode.find({
             where: {
-                project: { id: projectId },
-                parentId: "root"
+                project: { id: projectId }
             }
         });
 
@@ -67,10 +66,9 @@ export const createNode = async (
         }
     } | ErrorResponseDto>
 ) => {
-
     const { projectId, position, parentId, children, name, size, color } = req.body;
 
-    if (!projectId || !position || !parentId || !children || !name || !size || !color) {
+    if (!projectId || !position || !parentId || !name || !size || !color) {
         return res.status(400).json({
             result: "failure",
             message: 'Match all required fields'
@@ -78,18 +76,18 @@ export const createNode = async (
     }
 
     try {
+        const project = await Project.findOne({ where: { id: projectId } });
+        if (!project) {
+            return res.status(404).json({
+                result: "failure",
+                message: 'Project not found'
+            });
+        }
 
         const node = new CanvasNode();
 
-        const project = await Project.findOne({ where: { id: projectId } });
-
-        if (!project) return res.status(404).json({
-            result: "failure",
-            message: 'Project not found'
-        });
-
         node.position = position;
-        node.children = children;
+        node.children = [];
         node.project = project;
         node.parentId = parentId;
         node.name = name;
@@ -97,6 +95,28 @@ export const createNode = async (
         node.color = color;
 
         await node.save();
+
+        // Если parentId не "root", обновляем родительский узел
+        if (parentId !== "root") {
+
+            const parentNode = await CanvasNode.findOne({ where: { id: parentId } });
+
+            if (!parentNode) {
+                await node.remove();
+                return res.status(404).json({
+                    result: "failure",
+                    message: 'Parent node not found'
+                });
+            }
+
+            if (!parentNode.children) {
+                parentNode.children = [];
+            }
+
+            parentNode.children.push(node.id);
+
+            await parentNode.save();
+        }
 
         return res.status(201).json({
             result: "success",
@@ -106,6 +126,7 @@ export const createNode = async (
         });
 
     } catch (error) {
+        console.log(error);
         return res.status(500).json({
             result: "failure",
             message: 'Error creating node'
@@ -241,12 +262,12 @@ export const getNodeChildren = async (
             })
         }
 
-        const nodeChildrenIds = node.children;
+        const nodeChildrenIdList = node.children;
 
         const nodeChildren : CanvasNode[] = []
 
-        for (let i = 0; i < nodeChildrenIds.length; i++) {
-            const node = await CanvasNode.findOne({ where: { id: nodeChildrenIds[i] } });
+        for (let i = 0; i < nodeChildrenIdList.length; i++) {
+            const node = await CanvasNode.findOne({ where: { id: nodeChildrenIdList[i] } });
             if (node != null) {
                 nodeChildren.push(node);
             }
