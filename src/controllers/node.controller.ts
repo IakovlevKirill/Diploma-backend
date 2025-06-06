@@ -5,7 +5,7 @@ import {CanvasNode} from "../entities/CanvasNode";
 
 import {ErrorResponseDto} from "../dto/response/errorResponse.dto";
 
-export const getNodesByProjectId = async (
+export const getProjectRootNodesByProjectId = async (
     req: Request<{}, {}, {}, {
         projectId: string
     }>,
@@ -29,7 +29,10 @@ export const getNodesByProjectId = async (
     try {
 
         const nodesArray = await CanvasNode.find({
-            where: { project: { id: projectId } }
+            where: {
+                project: { id: projectId },
+                parentId: "root"
+            }
         });
 
         return res.status(200).json({
@@ -53,7 +56,7 @@ export const createNode = async (
         projectId: string,
         position: { x: number; y: number },
         size: { width: number; height: number; },
-        parent: string,
+        parentId: string,
         children: string[],
         color: string
     }>,
@@ -65,9 +68,9 @@ export const createNode = async (
     } | ErrorResponseDto>
 ) => {
 
-    const { projectId, position, parent, children, name, size, color } = req.body;
+    const { projectId, position, parentId, children, name, size, color } = req.body;
 
-    if (!projectId || !position || !parent || !children || !name || !size || !color) {
+    if (!projectId || !position || !parentId || !children || !name || !size || !color) {
         return res.status(400).json({
             result: "failure",
             message: 'Match all required fields'
@@ -88,7 +91,7 @@ export const createNode = async (
         node.position = position;
         node.children = children;
         node.project = project;
-        node.parent = parent;
+        node.parentId = parentId;
         node.name = name;
         node.size = size;
         node.color = color;

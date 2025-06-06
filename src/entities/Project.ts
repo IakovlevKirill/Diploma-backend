@@ -22,14 +22,14 @@ export class Project extends BaseEntity {
     @Column({default: false})
     isPinned: boolean;
 
+    @Column({default: false})
+    isDeleted: boolean;
+
     @CreateDateColumn({ type: 'timestamp with time zone' })
     createdAt: Date;
 
     @UpdateDateColumn({ type: 'timestamp with time zone' })
     updatedAt: Date;
-
-    @Column({ type: 'text', default: ''})
-    content: string; // json
 
     @OneToMany(() => CanvasNode, (node) => node.project, { cascade: true })
     nodes: CanvasNode[];

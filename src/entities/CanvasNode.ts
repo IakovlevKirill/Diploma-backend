@@ -22,7 +22,7 @@ export class CanvasNode extends BaseEntity {
     size: { width: number; height: number ; };
 
     @Column()
-    parent: string; // id родителя
+    parentId: string; // id родителя
 
     @Column("text", { array: true })
     children: string[]; // id детей

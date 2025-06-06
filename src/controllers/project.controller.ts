@@ -193,7 +193,7 @@ export const deleteProject = async (
             });
         }
 
-        await Project.delete({ id: projectId });
+        project.isDeleted = true;
 
         return res.status(200).json({
             result: "success",
@@ -232,7 +232,8 @@ export const getAllProjects = async (
     try {
         const projects = await Project.find({
             where: {
-                user: { id: userId }
+                user: { id: userId },
+                isDeleted: false
             },
             relations: ['user']
         });
@@ -380,7 +381,8 @@ export const getPinnedProjects = async (
         const projects = await Project.find({
             where: {
                 user: { id: userId },
-                isPinned: true
+                isPinned: true,
+                isDeleted: false
             }
         });
 
