@@ -8,7 +8,6 @@ import {
     BeforeInsert,
     BeforeUpdate,
     BaseEntity,
-    ManyToOne
 } from 'typeorm';
 import bcrypt from 'bcrypt';
 import { Exclude } from 'class-transformer';
