@@ -251,35 +251,52 @@ export const getNodeChildren = async (
 
     try {
 
-        const node = await CanvasNode.findOne({
-            where: { id: nodeId }
-        });
+        if (nodeId !== "root") {
 
-        if (node == null) {
-            return res.status(404).json({
-                result: "failure",
-                message: 'node not found'
-            })
+            const node = await CanvasNode.findOne({
+                where: { id: nodeId }
+            });
+
+            if (node == null) {
+                return res.status(404).json({
+                    result: "failure",
+                    message: 'node not found'
+                })
+            }
+
+            const nodeChildrenIdList = node.children;
+
+            const nodeChildren : CanvasNode[] = []
+
+            for (let i = 0; i < nodeChildrenIdList.length; i++) {
+                const node = await CanvasNode.findOne({ where: { id: nodeChildrenIdList[i] } });
+                if (node != null) {
+                    nodeChildren.push(node);
+                }
+            }
+
+            return res.status(200).json({
+                result: "success",
+                data: {
+                    nodes: nodeChildren
+                }
+            });
         }
 
-        const nodeChildrenIdList = node.children;
+        if (nodeId == "root") {
 
-        const nodeChildren : CanvasNode[] = []
+            const rootNodes = await CanvasNode.find({
+                where: { parentId: nodeId }
+            });
 
-        for (let i = 0; i < nodeChildrenIdList.length; i++) {
-            const node = await CanvasNode.findOne({ where: { id: nodeChildrenIdList[i] } });
-            if (node != null) {
-                nodeChildren.push(node);
-            }
+            return res.status(200).json({
+                result: "success",
+                data: {
+                    nodes: rootNodes
+                }
+            });
+
         }
-
-        return res.status(200).json({
-            result: "success",
-            data: {
-                nodes: nodeChildren
-            }
-        });
-
 
     } catch (error) {
         return res.status(500).json({
