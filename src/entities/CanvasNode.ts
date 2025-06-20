@@ -17,6 +17,9 @@ export class CanvasNode extends BaseEntity {
     @Column()
     name: string;
 
+    @Column()
+    pointColor: string;
+
     @Column("jsonb")
     position: { x: number; y: number };
 

@@ -53,6 +53,7 @@ export const createNode = async (
     req: Request<{}, {}, {
         id: string
         name: string,
+        pointColor: string,
         projectId: string,
         position: { x: number; y: number },
         size: { width: number; height: number; },
@@ -67,9 +68,9 @@ export const createNode = async (
         }
     } | ErrorResponseDto>
 ) => {
-    const { id, projectId, position, parentId, children, name, size, color } = req.body;
+    const { pointColor, id, projectId, position, parentId, children, name, size, color } = req.body;
 
-    if (!id || !projectId || !position || !parentId || !name || !size || !color) {
+    if (!pointColor || !id || !projectId || !position || !parentId || !name || !size || !color) {
         return res.status(400).json({
             result: "failure",
             message: 'Match all required fields'
@@ -98,6 +99,7 @@ export const createNode = async (
         const node = new CanvasNode();
 
         node.id = id;
+        node.pointColor = pointColor;
         node.position = position;
         node.children = [];
         node.project = project;
