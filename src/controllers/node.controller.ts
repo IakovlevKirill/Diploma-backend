@@ -51,6 +51,7 @@ export const getAllProjectNodesByProjectId = async (
 
 export const createNode = async (
     req: Request<{}, {}, {
+        id: string
         name: string,
         projectId: string,
         position: { x: number; y: number },
@@ -66,9 +67,9 @@ export const createNode = async (
         }
     } | ErrorResponseDto>
 ) => {
-    const { projectId, position, parentId, children, name, size, color } = req.body;
+    const { id, projectId, position, parentId, children, name, size, color } = req.body;
 
-    if (!projectId || !position || !parentId || !name || !size || !color) {
+    if (!id || !projectId || !position || !parentId || !name || !size || !color) {
         return res.status(400).json({
             result: "failure",
             message: 'Match all required fields'
@@ -77,6 +78,7 @@ export const createNode = async (
 
     try {
         const project = await Project.findOne({ where: { id: projectId } });
+
         if (!project) {
             return res.status(404).json({
                 result: "failure",
@@ -84,8 +86,18 @@ export const createNode = async (
             });
         }
 
+        const old_node = await CanvasNode.findOne({ where: { id: id } });
+
+        if (old_node) {
+            return res.status(500).json({
+                result: "failure",
+                message: 'Node with this id already exist'
+            });
+        }
+
         const node = new CanvasNode();
 
+        node.id = id;
         node.position = position;
         node.children = [];
         node.project = project;

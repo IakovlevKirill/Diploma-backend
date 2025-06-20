@@ -3,13 +3,15 @@ import {
     PrimaryGeneratedColumn,
     Column,
     ManyToOne,
-    BaseEntity
+    BaseEntity,
+    PrimaryColumn
 } from "typeorm";
 import {Project} from "./Project";
 
 @Entity()
 export class CanvasNode extends BaseEntity {
-    @PrimaryGeneratedColumn("uuid")
+
+    @PrimaryColumn()
     id: string;
 
     @Column()
@@ -32,4 +34,5 @@ export class CanvasNode extends BaseEntity {
 
     @ManyToOne(() => Project, (project) => project.nodes, { onDelete: 'CASCADE' })
     project: Project;
+
 }
