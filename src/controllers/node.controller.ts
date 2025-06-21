@@ -195,22 +195,27 @@ export const deleteNode = async (
 
 export const updateNode = async (
     req: Request<{}, {}, {
-        id: string,
-        x: number,
-        y: number
-    }> ,
+        id: string
+        name: string,
+        pointColor: string,
+        position: { x: number; y: number },
+        size: { width: number; height: number; },
+        parentId: string,
+        children: string[],
+        color: string
+    }>,
     res: Response<{
         result: "success" | "failure",
         message: string
     } | ErrorResponseDto>
 ) => {
 
-    const { id, x, y } = req.body;
+    const { pointColor, id, position, parentId, children, name, size, color } = req.body;
 
-    if (!id || !x || !y) {
+    if (!pointColor || !id || !position || !parentId || !name || !size || !color) {
         return res.status(400).json({
             result: "failure",
-            message: 'id, x, y  are required'
+            message: 'Match all required fields'
         });
     }
 
@@ -225,7 +230,14 @@ export const updateNode = async (
             });
         }
 
-        node.position = { x, y };
+        node.id = id;
+        node.pointColor = pointColor;
+        node.position = position;
+        node.children = children;
+        node.parentId = parentId;
+        node.name = name;
+        node.size = size;
+        node.color = color;
 
         await node.save();
 
