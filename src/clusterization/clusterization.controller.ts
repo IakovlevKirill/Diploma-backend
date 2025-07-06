@@ -30,6 +30,8 @@ export const createProjectWithClustering = [
         const file = req.file;
         const { userId, projectTitle } = req.query;
 
+        await new Promise(resolve => setTimeout(resolve, 8000));
+
         if (!file) {
             return res.status(400).json({
                 result: 'failure',
