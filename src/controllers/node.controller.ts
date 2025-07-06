@@ -260,17 +260,17 @@ export const updateNode = async (
 
 export const getNodeChildren = async (
     req: Request<{}, {}, {}, {
-        nodeId: string
-    }> ,
+        nodeId: string;
+        projectId: string;
+    }>,
     res: Response<{
-        result: "success" | "failure",
+        result: "success" | "failure";
         data: {
-            nodes: CanvasNode[]
-        }
+            nodes: CanvasNode[];
+        };
     } | ErrorResponseDto>
 ) => {
-
-    const { nodeId } = req.query;
+    const { nodeId, projectId } = req.query;
 
     if (!nodeId) {
         return res.status(400).json({
@@ -279,29 +279,57 @@ export const getNodeChildren = async (
         });
     }
 
+    if (!projectId) {
+        return res.status(400).json({
+            result: "failure",
+            message: 'projectId is required'
+        });
+    }
+
+    const project = await Project.findOne({ where: { id: projectId } });
+
+    if (!project) {
+        return res.status(404).json({
+            result: "failure",
+            message: 'Project not found'
+        });
+    }
+
     try {
-
         if (nodeId !== "root") {
-
-            const node = await CanvasNode.findOne({
+            const parentNode = await CanvasNode.findOne({
                 where: { id: nodeId }
             });
 
-            if (node == null) {
+            if (!parentNode) {
                 return res.status(404).json({
                     result: "failure",
-                    message: 'node not found'
-                })
+                    message: 'Parent node not found'
+                });
             }
 
-            const nodeChildrenIdList = node.children;
+            // Проверяем, что родительская нода принадлежит нужному проекту
+            if (parentNode.project.id !== projectId) {
+                return res.status(403).json({
+                    result: "failure",
+                    message: 'Access denied to this node'
+                });
+            }
 
-            const nodeChildren : CanvasNode[] = []
+            const nodeChildrenIdList = parentNode.children || [];
+
+            const nodeChildren: CanvasNode[] = [];
 
             for (let i = 0; i < nodeChildrenIdList.length; i++) {
-                const node = await CanvasNode.findOne({ where: { id: nodeChildrenIdList[i] } });
-                if (node != null) {
-                    nodeChildren.push(node);
+                const childNode = await CanvasNode.findOne({
+                    where: {
+                        id: nodeChildrenIdList[i],
+                        project: project // <-- ОСНОВНАЯ ПРОВЕРКА
+                    }
+                });
+
+                if (childNode) {
+                    nodeChildren.push(childNode);
                 }
             }
 
@@ -313,10 +341,12 @@ export const getNodeChildren = async (
             });
         }
 
-        if (nodeId == "root") {
-
+        if (nodeId === "root") {
             const rootNodes = await CanvasNode.find({
-                where: { parentId: nodeId }
+                where: {
+                    parentId: nodeId,
+                    project: project
+                }
             });
 
             return res.status(200).json({
@@ -325,10 +355,15 @@ export const getNodeChildren = async (
                     nodes: rootNodes
                 }
             });
-
         }
 
+        return res.status(400).json({
+            result: "failure",
+            message: 'Invalid nodeId'
+        });
+
     } catch (error) {
+        console.error(error);
         return res.status(500).json({
             result: "failure",
             message: 'Internal server error while getting node children'
