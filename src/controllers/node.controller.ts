@@ -52,6 +52,7 @@ export const getAllProjectNodesByProjectId = async (
 export const createNode = async (
     req: Request<{}, {}, {
         id: string
+        type: string,
         name: string,
         pointColor: string,
         projectId: string,
@@ -68,9 +69,9 @@ export const createNode = async (
         }
     } | ErrorResponseDto>
 ) => {
-    const { pointColor, id, projectId, position, parentId, children, name, size, color } = req.body;
+    const { type, pointColor, id, projectId, position, parentId, children, name, size, color } = req.body;
 
-    if (!pointColor || !id || !projectId || !position || !parentId || !name || !size || !color) {
+    if (!type || !pointColor || !id || !projectId || !position || !parentId || !name || !size || !color) {
         return res.status(400).json({
             result: "failure",
             message: 'Match all required fields'
@@ -99,6 +100,7 @@ export const createNode = async (
         const node = new CanvasNode();
 
         node.id = id;
+        node.type = type;
         node.pointColor = pointColor;
         node.position = position;
         node.children = [];
@@ -196,6 +198,7 @@ export const deleteNode = async (
 export const updateNode = async (
     req: Request<{}, {}, {
         id: string
+        type: string,
         name: string,
         pointColor: string,
         position: { x: number; y: number },
@@ -210,9 +213,9 @@ export const updateNode = async (
     } | ErrorResponseDto>
 ) => {
 
-    const { pointColor, id, position, parentId, children, name, size, color } = req.body;
+    const { type, pointColor, id, position, parentId, children, name, size, color } = req.body;
 
-    if (!pointColor || !id || !position || !parentId || !name || !size || !color) {
+    if (!type || !pointColor || !id || !position || !parentId || !name || !size || !color) {
         return res.status(400).json({
             result: "failure",
             message: 'Match all required fields'
@@ -231,6 +234,7 @@ export const updateNode = async (
         }
 
         node.id = id;
+        node.type = type;
         node.pointColor = pointColor;
         node.position = position;
         node.children = children;

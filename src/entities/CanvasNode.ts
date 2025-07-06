@@ -17,13 +17,16 @@ export class CanvasNode extends BaseEntity {
     @Column()
     name: string;
 
-    @Column()
+    @Column({default: "untyped"})
+    type: string;
+
+    @Column({default: "#D9D9D9"})
     pointColor: string;
 
-    @Column("jsonb")
+    @Column("jsonb", {nullable: true})
     position: { x: number; y: number };
 
-    @Column("jsonb")
+    @Column("jsonb", {default: { width: 100, height: 100}})
     size: { width: number; height: number ; };
 
     @Column()
@@ -32,7 +35,7 @@ export class CanvasNode extends BaseEntity {
     @Column("text", { array: true })
     children: string[]; // id детей
 
-    @Column()
+    @Column({nullable: true})
     color: string;
 
     @ManyToOne(() => Project, (project) => project.nodes, { onDelete: 'CASCADE' })
